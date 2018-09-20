@@ -15,14 +15,17 @@ const run = (command, workingDir)=>{
 ...
 }
 
-//Usage: await builder([command], [working directory])
+//Usage: await builder([command], [working directory], [continue with error])
 //Execution is in sequence. To do parallel, remove the await
 const main = async ()=>{
-    await run('ng build', 'C:/Users/labrat/Desktop/Front/src/app');
-    await run('dotnet publish -c Release -o out', './')
-    await run('docker image rm back --force', './');
-    await run('docker build --tag back --file dotnetrun.dockerfile .', './');
-    await run('docker run -d -p 5000:80 back', './')
+    const ngpath = String.raw`C:\Users\Labrat\Front\src\app`;
+    const dnpath = './';
+    await run('ng build', ngpath);
+    await run('dotnet publish -c Release -o out', dnpath)
+    await run('docker image rm back --force', dnpath, true);
+    await run('docker container rm back --force', dnpath, true);
+    await run('docker build --tag back --file dotnetrun.dockerfile .', dnpath);
+    await run('docker run --name back -d -p 5000:80 back', dnpath)
 }
 
 main();
@@ -32,7 +35,8 @@ main();
 <p>In sequential order:</p>
 <p>1) Builds an Angular static files from an external directory.</p>
 <p>2) Creates a publish build of a .NET Core application from the current directory.</p>
-<p>3) Removes a docker image call "back".</p>
+<p>3) Removes a docker image and container with the name "back". Continues if error occurs.</p>
 <p>4) Runs a dockerfile call "dotnetrun.dockerfile" from the current directory which will build a new "back" image.</p>
-<p>5) Runs the newly created "back" image with publish port 5000 from internal port 80. Also runs detached from terminal.</p>
+<p>5) Runs the newly created "back" image with publish port 5000 from internal port 80. Also runs detached from terminal with the name "back".</p>
+<p>Note, String.raw is use so you can copy/paste path in windows without fixing the backslash.</p>
 
