@@ -15,7 +15,7 @@ const run = (command, workingDir)=>{
 ...
 }
 
-//Usage: await run([command], [working directory], [continue with error])
+//Usage: await run(command, working_directory, [continue with error])
 //Execution is in sequence. To do parallel, remove the await
 const main = async ()=>{
     const ngpath = String.raw`C:\Users\Labrat\Front\src\app`;
