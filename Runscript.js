@@ -1,31 +1,50 @@
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 
 //Code
+const colorReset = 0
+const colorRange = [8, 13]
+const colors = 
+["\x1b[0m"
+,"\x1b[1m"
+,"\x1b[2m"
+,"\x1b[4m"
+,"\x1b[5m"
+,"\x1b[7m"
+,"\x1b[8m"
+,"\x1b[30m"
+,"\x1b[31m"
+,"\x1b[32m"
+,"\x1b[33m"
+,"\x1b[34m"
+,"\x1b[35m"
+,"\x1b[36m"
+,"\x1b[37m"
+,"\x1b[40m"
+,"\x1b[41m"
+,"\x1b[42m"
+,"\x1b[43m"
+,"\x1b[44m"
+,"\x1b[45m"
+,"\x1b[46m"
+,"\x1b[47m"]
 const run = (command, workingDir, ignoreErr)=>{
     return new Promise((resolve, reject)=>{
         const opt = {
             cwd: workingDir,
-            timeout: 0
+            shell: true
         }
-        console.log("RUN: " + command + " FROM: " + workingDir);
-        exec(command,opt, (err, stdout, stderr) => {
-            if (err) {
-              console.log('ERROR!: ', err);
-              if(!ignoreErr){
-                reject();
-                return
-              };
-            }
-            // the *entire* stdout and stderr (buffered)
-            if(stdout){
-                console.log(`stdout: ${stdout}`);
-            }
-            if(stderr){
-                console.log(`stderr: ${stderr}`);
-            }
-            resolve();
+        const ran = Math.floor(Math.random()*6)+8
+        console.log(colors[ran], "RUN: " + command + " FROM: " + workingDir);
+        let spawner = spawn(command,[],opt);
+        spawner.stdout.on('data', function (data) {
+            console.log(colors[colorReset]);
+            console.log(colors[ran], 'STDOUT(' + command + '): ' + data.toString());
         });
-    })
+        spawner.stderr.on('data', function (data) {
+            console.log('Error: ' + data.toString());
+        });
+        resolve();
+    });
 }
 
 //Usage: await builder([command], [working directory], [continue with error])
